@@ -6,7 +6,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace TestGenerator.Core.CodeGenerators.Builders;
 
-internal class NamespaceBuilder
+public class NamespaceBuilder
 {
     private static readonly Regex ValidNamespaceRegex = new(
         @"^[a-zA-Z]+(\.[a-zA-Z]+)*$",
@@ -23,9 +23,13 @@ internal class NamespaceBuilder
     public NamespaceBuilder(string namespaceName)
     {
         ValidateNamespaceName(namespaceName);
+        
         _namespaceName = namespaceName;
+        
         _ensureTestsSuffix = true;
+        
         _members = new List<MemberDeclarationSyntax>();
+        
         _usings = new List<UsingDirectiveSyntax>();
     }
     

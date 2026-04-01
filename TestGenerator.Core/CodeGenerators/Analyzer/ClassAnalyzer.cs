@@ -5,7 +5,7 @@ using TestGenerator.Core.CodeGenerators.Models;
 
 namespace TestGenerator.Core.CodeGenerators.Analyzer;
 
-internal static class ClassAnalyzer
+public static class ClassAnalyzer
 {
     public static ClassInfo Analyze(string filePath)
     {

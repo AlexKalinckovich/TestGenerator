@@ -386,12 +386,12 @@ public class TestGenerator
         return Path.Combine(_dstDirectoryPath, relativeDir, fileName);
     }
 
-    private string GetRelativeDirectory(string relativePath)
+    private static string GetRelativeDirectory(string relativePath)
     {
         return Path.GetDirectoryName(relativePath) ?? string.Empty;
     }
 
-    private string BuildTestFileName(string sourceFilePath)
+    private static string BuildTestFileName(string sourceFilePath)
     {
         return Path.GetFileNameWithoutExtension(sourceFilePath) + ".Tests.cs";
     }
@@ -415,7 +415,7 @@ public class TestGenerator
     [Conditional("DEBUG")]
     private static void DebugLog(string message)
     {
-        Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}][Thread {Thread.CurrentThread.ManagedThreadId}] {message}");
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}][Thread {Environment.CurrentManagedThreadId}] {message}");
     }
 
     

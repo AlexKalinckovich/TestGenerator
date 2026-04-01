@@ -6,7 +6,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace TestGenerator.Core.CodeGenerators.Builders;
 
-internal class MockSetupBuilder
+public class MockSetupBuilder
 {
     private readonly List<StatementSyntax> _setupStatements;
 
@@ -34,8 +34,11 @@ internal class MockSetupBuilder
     public MockSetupBuilder AddSetupWithReturnValue(DependencyInfo dependency, MethodSignature method, ExpressionSyntax returnValue)
     {
         InvocationExpressionSyntax setupInvocation = BuildSetupInvocation(dependency, method);
+        
         InvocationExpressionSyntax wrappedInvocation = WrapWithReturns(setupInvocation, returnValue);
+        
         StatementSyntax statement = CreateExpressionStatement(wrappedInvocation);
+        
         _setupStatements.Add(statement);
 
         return this;
@@ -81,14 +84,14 @@ internal class MockSetupBuilder
         return CreateSeparatedArgumentList(method);
     }
 
-    private SeparatedSyntaxList<ArgumentSyntax> CreateSeparatedArgumentList(MethodSignature method)
+    private static SeparatedSyntaxList<ArgumentSyntax> CreateSeparatedArgumentList(MethodSignature method)
     {
         return SeparatedList<ArgumentSyntax>(
             method.Parameters.Select((ParameterInfo p) => Argument(IdentifierName(p.Name)))
         );
     }
 
-    private SimpleLambdaExpressionSyntax BuildLambdaExpression(MethodSignature method, SeparatedSyntaxList<ArgumentSyntax> arguments)
+    private static SimpleLambdaExpressionSyntax BuildLambdaExpression(MethodSignature method, SeparatedSyntaxList<ArgumentSyntax> arguments)
     {
         InvocationExpressionSyntax methodInvocation = CreateMethodInvocation(method, arguments);
 
@@ -108,7 +111,7 @@ internal class MockSetupBuilder
         ).WithArgumentList(ArgumentList(arguments));
     }
 
-    private InvocationExpressionSyntax CreateInvocationExpression(string fieldName, string methodName, ExpressionSyntax argument)
+    private static InvocationExpressionSyntax CreateInvocationExpression(string fieldName, string methodName, ExpressionSyntax argument)
     {
         return InvocationExpression(
             MemberAccessExpression(
@@ -121,7 +124,7 @@ internal class MockSetupBuilder
         ));
     }
 
-    private InvocationExpressionSyntax WrapWithReturns(InvocationExpressionSyntax setupInvocation, ExpressionSyntax returnValue)
+    private static InvocationExpressionSyntax WrapWithReturns(InvocationExpressionSyntax setupInvocation, ExpressionSyntax returnValue)
     {
         return InvocationExpression(
             MemberAccessExpression(

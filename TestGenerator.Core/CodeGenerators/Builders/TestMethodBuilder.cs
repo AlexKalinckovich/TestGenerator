@@ -6,7 +6,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace TestGenerator.Core.CodeGenerators.Builders;
 
-internal class TestMethodBuilder
+public class TestMethodBuilder
 {
     private const string ArrangeComment = "// Arrange";
     private const string ActComment = "// Act";
@@ -91,11 +91,11 @@ internal class TestMethodBuilder
     private List<LocalDeclarationStatementSyntax> CreateParameterDeclarations(MethodInfo methodInfo)
     {
         return methodInfo.Parameters
-            .Select(p => CreateParameterDeclaration(p))
+            .Select(CreateParameterDeclaration)
             .ToList();
     }
 
-    private LocalDeclarationStatementSyntax CreateParameterDeclaration(ParameterInfo param)
+    private static LocalDeclarationStatementSyntax CreateParameterDeclaration(ParameterInfo param)
     {
         ExpressionSyntax defaultValue = GetDefaultValue(param.Type);
 
@@ -152,7 +152,7 @@ internal class TestMethodBuilder
         );
     }
 
-    private InvocationExpressionSyntax BuildMethodInvocation(SeparatedSyntaxList<ArgumentSyntax> arguments, string methodName)
+    private static InvocationExpressionSyntax BuildMethodInvocation(SeparatedSyntaxList<ArgumentSyntax> arguments, string methodName)
     {
         return InvocationExpression(
             MemberAccessExpression(
@@ -204,29 +204,27 @@ internal class TestMethodBuilder
         return statements;
     }
 
-    private InvocationExpressionSyntax BuildAssertThatInvocation()
+    private static InvocationExpressionSyntax BuildAssertThatInvocation()
     {
         return InvocationExpression(
             MemberAccessExpression(
                 SyntaxKind.SimpleMemberAccessExpression,
-                IdentifierName("Assert"),
-                IdentifierName("That")
+                expression: IdentifierName("Assert"), IdentifierName("That")
             )
-        ).WithArgumentList(ArgumentList(SeparatedList(new[]
-        {
-            Argument(IdentifierName(ActualVariableName)),
+        ).WithArgumentList(ArgumentList(SeparatedList(nodes:
+        [
+            Argument(expression: IdentifierName(ActualVariableName)),
             Argument(
-                InvocationExpression(
+                expression: InvocationExpression(
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName("Is"),
-                        IdentifierName("EqualTo")
+                        expression: IdentifierName("Is"), IdentifierName("EqualTo")
                     )
                 ).WithArgumentList(ArgumentList(
-                    SingletonSeparatedList(Argument(IdentifierName(ExpectedVariableName)))
+                    SingletonSeparatedList(node: Argument(expression: IdentifierName(ExpectedVariableName)))
                 ))
             )
-        })));
+        ])));
     }
 
     private List<StatementSyntax> CreateMockVerifications(List<DependencyInfo> dependencies)
@@ -241,7 +239,7 @@ internal class TestMethodBuilder
         return mockSetupBuilder.Build();
     }
 
-    private void AddMockVerificationsForDependency(MockSetupBuilder builder, DependencyInfo dependency)
+    private static void AddMockVerificationsForDependency(MockSetupBuilder builder, DependencyInfo dependency)
     {
         foreach (MethodSignature method in dependency.Methods)
         {
@@ -270,13 +268,13 @@ internal class TestMethodBuilder
     {
         return type switch
         {
-            "int" => LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(0)),
-            "long" => LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(0L)),
+            "int"    => LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(0)),
+            "long"   => LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(0L)),
             "double" => LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(0.0)),
-            "float" => LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(0.0f)),
+            "float"  => LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(0.0f)),
             "string" => LiteralExpression(SyntaxKind.StringLiteralExpression, Literal("")),
-            "bool" => LiteralExpression(SyntaxKind.FalseLiteralExpression),
-            _ => LiteralExpression(SyntaxKind.NullLiteralExpression)
+            "bool"   => LiteralExpression(SyntaxKind.FalseLiteralExpression),
+            _        => LiteralExpression(SyntaxKind.NullLiteralExpression)
         };
     }
 }

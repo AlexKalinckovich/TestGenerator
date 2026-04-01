@@ -5,7 +5,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace TestGenerator.Core.CodeGenerators.Builders;
 
-internal class TestClassBuilder
+public class TestClassBuilder
 {
     private readonly ClassInfo _classInfo;
     private readonly List<MethodDeclarationSyntax> _testMethods;
@@ -237,7 +237,7 @@ internal class TestClassBuilder
         );
     }
 
-    private MethodDeclarationSyntax CreateSetUpMethodDeclaration(List<StatementSyntax> statements)
+    private static MethodDeclarationSyntax CreateSetUpMethodDeclaration(List<StatementSyntax> statements)
     {
         return MethodDeclaration(PredefinedType(Token(SyntaxKind.VoidKeyword)), "SetUp")
             .AddModifiers(Token(SyntaxKind.PublicKeyword))
